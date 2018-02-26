@@ -27,7 +27,7 @@ class FilesLDB ():
         self.files_ldb_path = os.path.join(ctx.config.info_dir(), ctx.const.files_ldb)
         self.filesdb = plyvel.DB(self.files_ldb_path, create_if_missing=True)
         if not [f for f in os.listdir(self.files_ldb_path) if f.endswith('.ldb')]:
-            if ctx.comar: self.destroy()
+            self.destroy()
             self.create_filesdb()
 
     def __del__(self):

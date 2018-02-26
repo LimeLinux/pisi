@@ -104,7 +104,6 @@ class Constants:
         self.__c.system_devel_component = "system.devel"
         self.__c.devels_component = "programming.devel"
         self.__c.docs_component = "programming.docs"
-        self.__c.installed_extra = "installedextra"
 
         #file/directory permissions
         self.__c.umask = 0022

@@ -62,5 +62,3 @@ def keyboard_interrupt_disabled():
 
 def keyboard_interrupt_pending():
     return sig and sig.signal_pending(signal.SIGINT)
-
-filesdb = None

@@ -401,9 +401,10 @@ def search_file(term):
 
     >>> [("kvm", (["lib/modules/2.6.18.8-86/extra/kvm-amd.ko","lib/modules/2.6.18.8-86/extra/kvm-intel.ko"])),]
     """
+    filesdb = pisi.db.filesldb.FilesLDB()
     if term.startswith("/"): # FIXME: why? why?
         term = term[1:]
-    return ctx.filesdb.search_file(term)
+    return filesdb.search_file(term)
 
 def fetch(packages=[], path=os.path.curdir):
     """
@@ -868,6 +869,7 @@ def __update_repo(repo, force=False):
 # FIXME: rebuild_db is only here for filesdb and it really is ugly. we should not need any rebuild.
 @locked
 def rebuild_db():
+    filesdb = pisi.db.filesldb.FilesLDB()
 
     # save parameters and shutdown pisi
     options = ctx.config.options
@@ -875,9 +877,9 @@ def rebuild_db():
     comar = ctx.comar
     pisi._cleanup()
 
-    ctx.filesdb.close()
-    ctx.filesdb.destroy()
-    ctx.filesdb = pisi.db.filesldb.FilesLDB()
+    filesdb.close()
+    filesdb.destroy()
+    filesdb = pisi.db.filesldb.FilesLDB()
 
     # reinitialize everything
     set_userinterface(ui)

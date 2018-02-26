@@ -205,6 +205,7 @@ def upgrade(A=[], repo=None):
         ctx.ui.info(util.colorize(_("Downloading %d / %d") % (order.index(x)+1, len(order)), "yellow"))
         install_op = atomicoperations.Install.from_name(x)
         paths.append(install_op.package_fname)
+        install_op = None
 
     # fetch to be upgraded packages but do not install them.
     if ctx.get_option('fetch_only'):
@@ -219,6 +220,7 @@ def upgrade(A=[], repo=None):
         ctx.ui.info(util.colorize(_("Installing %d / %d") % (paths.index(path)+1, len(paths)), "yellow"))
         install_op = atomicoperations.Install(path, ignore_file_conflicts = True)
         install_op.install(not ctx.get_option('compare_sha1sum'))
+        install_op = None
 
 def plan_upgrade(A, force_replaced=True, replaces=None):
     # FIXME: remove force_replaced

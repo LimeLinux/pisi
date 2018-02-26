@@ -10,7 +10,6 @@
 # Please read the COPYING file.
 #
 
-import os
 import sys
 
 import gettext
@@ -25,8 +24,10 @@ import pisi.util as util
 import pisi.ui as ui
 import pisi.db
 
-def remove(A, ignore_dep = False, ignore_safety = False):
+def remove(A, ignore_dep = False, ignore_safety = False, filesdb = None):
     """remove set A of packages from system (A is a list of package names)"""
+
+    if not filesdb: filesdb = pisi.db.filesldb.FilesLDB()
 
     componentdb = pisi.db.componentdb.ComponentDB()
     installdb = pisi.db.installdb.InstallDB()
@@ -81,12 +82,7 @@ in the respective order to satisfy dependencies:
 
     for x in order:
         if installdb.has_package(x):
-            atomicoperations.remove_single(x)
-            if x in installdb.installed_extra:
-                installdb.installed_extra.remove(x)
-                with open(os.path.join(ctx.config.info_dir(), ctx.const.installed_extra), "w") as ie_file:
-                    ie_file.write("\n".join(installdb.installed_extra) + ("\n" if installdb.installed_extra else ""))
-
+            atomicoperations.remove_single(x, filesdb=filesdb)
         else:
             ctx.ui.info(_('Package %s is not installed. Cannot remove.') % x)
 
@@ -133,6 +129,6 @@ def remove_obsoleted_packages():
         if remove(obsoletes, ignore_dep=True, ignore_safety=True):
             raise Exception(_("Obsoleted packages remaining"))
 
-def remove_replaced_packages(replaced):
-    if remove(replaced, ignore_dep=True, ignore_safety=True):
+def remove_replaced_packages(replaced, filesdb=None):
+    if remove(replaced, ignore_dep=True, ignore_safety=True, filesdb=filesdb):
         raise Exception(_("Replaced package remains"))

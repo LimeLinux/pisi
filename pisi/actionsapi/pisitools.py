@@ -41,11 +41,6 @@ def dobin(sourceFile, destinationDirectory = '/usr/bin'):
     ''' example call: pisitools.dobin("bin/xloadimage", "/bin", "xload") '''
     executable_insinto(join_path(get.installDIR(), destinationDirectory), sourceFile)
 
-def dopixmaps(sourceFile, destinationDirectory = '/usr/share/pixmaps'):
-    '''insert a data file into /usr/share/pixmaps'''
-    ''' example call: pisitools.dopixmaps("/usr/share/pixmaps/firefox", "firefox") '''
-    readable_insinto(join_path(get.installDIR(), destinationDirectory), sourceFile)
-
 def dodir(destinationDirectory):
     '''creates a directory tree'''
     makedirs(join_path(get.installDIR(), destinationDirectory))

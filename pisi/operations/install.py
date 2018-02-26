@@ -27,7 +27,7 @@ import pisi.pgraph as pgraph
 import pisi.ui as ui
 import pisi.db
 
-def install_pkg_names(A, reinstall = False, extra = False):
+def install_pkg_names(A, reinstall = False):
     """This is the real thing. It installs packages from
     the repository, trying to perform a minimum number of
     installs"""
@@ -78,8 +78,7 @@ def install_pkg_names(A, reinstall = False, extra = False):
     if ctx.get_option('dry_run'):
         return True
 
-    extra_packages = set(order) - A_0
-    if extra_packages:
+    if set(order) - A_0:
         if not ctx.ui.confirm(_('There are extra packages due to dependencies. Do you want to continue?')):
             return False
 
@@ -92,18 +91,11 @@ def install_pkg_names(A, reinstall = False, extra = False):
         conflicts = operations.helper.check_conflicts(order, packagedb)
 
     paths = []
-    extra_paths = {}
     for x in order:
         ctx.ui.info(util.colorize(_("Downloading %d / %d") % (order.index(x)+1, len(order)), "yellow"))
         install_op = atomicoperations.Install.from_name(x)
         paths.append(install_op.package_fname)
-        if x in extra_packages or (extra and x in A):
-            extra_paths[install_op.package_fname] = x
-        elif reinstall and  x in installdb.installed_extra:
-            installdb.installed_extra.remove(x)
-            with open(os.path.join(ctx.config.info_dir(), ctx.const.installed_extra), "w") as ie_file:
-                ie_file.write("\n".join(installdb.installed_extra) + ("\n" if installdb.installed_extra else ""))
-
+        install_op = None
 
     # fetch to be installed packages but do not install them.
     if ctx.get_option('fetch_only'):
@@ -116,12 +108,7 @@ def install_pkg_names(A, reinstall = False, extra = False):
         ctx.ui.info(util.colorize(_("Installing %d / %d") % (paths.index(path)+1, len(paths)), "yellow"))
         install_op = atomicoperations.Install(path)
         install_op.install(False)
-        try:
-            with open(os.path.join(ctx.config.info_dir(), ctx.const.installed_extra), "a") as ie_file:
-                ie_file.write("%s\n" % extra_paths[path])
-            installdb.installed_extra.append(extra_paths[path])
-        except KeyError:
-            pass
+        install_op = None
 
     return True
 
@@ -214,7 +201,7 @@ def install_pkg_files(package_URIs, reinstall = False):
         ctx.ui.info(util.format_by_columns(sorted(extra_packages)))
         if not ctx.ui.confirm(_('Do you want to continue?')):
             raise Exception(_('External dependencies not satisfied'))
-        install_pkg_names(extra_packages, reinstall=True, extra=True)
+        install_pkg_names(extra_packages, reinstall=True)
 
     class PackageDB:
         def get_package(self, key, repo = None):
